@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chess-Multipler</title>
+    <title>♟ Chess-Multipler</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="chess.js"></script>
     <link rel="stylesheet" href="./chessboardjs-1.0.0/css/chessboard-1.0.0.min.css">
@@ -13,6 +13,10 @@
 <body>
     <div class="header-bar">
       <h1 class="Game">Chess Game</h1>
+      <div id="timerDisplay" style="margin: 10px 0; text-align: center;">
+            <p id = "whiteTimerDisplay">White: <span id="whiteTimerDisplay">0:00</span></p>
+            <p id = "blackTimerDisplay">Black: <span id="blackTimerDisplay">0:00</span></p>
+    </div>
       <p id="total_player">Total Players: 0</p>
     </div>
     <p id="player" class="display-none"></p>
@@ -22,10 +26,7 @@
         <button class="time" data-time="15">15 Min.</button>
         <button class="time" data-time="20">20 Min.</button>
     </div>
-    <div id="timerDisplay" style="margin: 10px 0; text-align: center;">
-        <span style="font-weight:bold;">Time left: </span>
-        <span id="timerDisplay">00:00</span>
-    </div>
+    
     <div id="board1" class="root" style="width: 600px;"></div>
     </div>
     <p id="waiting" class="display-none">Waiting for player to join</p>

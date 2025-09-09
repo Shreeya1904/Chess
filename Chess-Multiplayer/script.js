@@ -4,6 +4,7 @@ var $status = $('#status')
 var $fen = $('#fen')
 var $pgn = $('#pgn')
 let cplayer = null;
+let whiteTimer, blackTimer;
 
 function startTimer(seconds, container, oncomplete) {
     let startTime, timer, obj, ms = seconds*1000,
@@ -49,20 +50,25 @@ function onDragStart(source, piece, position, orientation) {
   }
 }
 
-function onDrop (source, target) {
-  // see if the move is legal
+function onDrop(source, target) {
   var move = game.move({
     from: source,
     to: target,
-    promotion: 'q' // NOTE: always promote to a queen for example simplicity
-  })
+    promotion: 'q'
+  });
 
-  // illegal move
-  if (move === null) return 'snapback'
+  if (move === null) return 'snapback';
+
   socket.emit('Sync_state', game.fen(), game.turn());
-  updateStatus()
+  updateStatus();
+  if (game.turn() === 'w') {
+    blackTimer.pause();
+    whiteTimer.resume();
+  } else {
+    whiteTimer.pause();
+    blackTimer.resume();
+  }
 }
-
 function onChange() {
   if (game.game_over()) {
   if (game.in_checkmate()) {
@@ -152,25 +158,43 @@ socket.on('total-players', function(data) {
   document.getElementById('total_player').innerText = `Total Players: ${data}`;
 });
 
-socket.on('match-found', (color,time) => {
+socket.on('match-found', (color, time) => {
   cplayer = color;
-  
+
+  if (cplayer === 'white') {
+    document.getElementById('whiteTimerDisplay').style.display = 'block';
+    document.getElementById('blackTimerDisplay').style.display = 'none';
+  } else {
+    document.getElementById('whiteTimerDisplay').style.display = 'none';
+    document.getElementById('blackTimerDisplay').style.display = 'block';
+  }
   document.querySelector('.root').style.display = 'block';
   document.getElementById('waiting').style.display = 'none';
   const currentplayer = color === 'white' ? 'White' : 'Black';
   document.getElementById('player').style.display = 'block';
   document.getElementById('player').innerHTML =
     'You are playing as ' + currentplayer;
-    game.reset();
-    board.orientation(currentplayer.toLowerCase());
+
+  game.reset();
+  board.orientation(currentplayer.toLowerCase());
   board.start();
 
-  var timer = startTimer(Number(time)*60, 'timerDisplay', function () {
-    alert('Time is up! You lost the game.');
+  whiteTimer = startTimer(Number(time) * 60, 'whiteTimerDisplay', function () {
+    alert('White ran out of time! Black wins.');
+    socket.emit('game_over', 'Black');
   });
-  timer.pause();
-  timer.resume();
-    updateStatus();
+
+  blackTimer = startTimer(Number(time) * 60, 'blackTimerDisplay', function () {
+    alert('Black ran out of time! White wins.');
+    socket.emit('game_over', 'White');
+  });
+
+  whiteTimer.pause();
+  blackTimer.pause();
+
+  if (game.turn() === 'w') whiteTimer.resume();
+
+  updateStatus();
 });
 
 
@@ -188,8 +212,5 @@ socket.on('game_over_server', function (winner) {
   } else {
     alert(`Game Over! ${winner} wins.`);
   }
-  //window.location.reload();
-  game.reset();
-  board.start();
-  updateStatus();
+  window.location.reload();
 });

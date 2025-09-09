@@ -51,8 +51,7 @@ function fireMatches({ opponentId, socketId , time}) {
 
     players[socketId].on('game_over', (winner) => {
         players[opponentId].emit('game_over_server', winner);
-    });
-
+    })
     players[opponentId].on('game_over', (winner) => {
         players[socketId].emit('game_over_server', winner);
     });
