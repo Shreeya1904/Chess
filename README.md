@@ -117,23 +117,6 @@ The game demonstrates **JavaScript DOM manipulation**, **WebSocket-based real-ti
 
 ---
 
-## Project Structure
-
-```
-chess-game/
-├── client/                # Frontend files
-│   ├── index.html
-│   ├── style.css
-│   └── app.js             # DOM and game logic
-├── server/                # Backend files
-│   ├── server.js          # Express + WebSocket.io server
-│   └── matchmaking.js     # Handles session-based pairing
-├── package.json
-└── README.md
-```
-
----
-
 ## How It Works
 
 * **Frontend:**
